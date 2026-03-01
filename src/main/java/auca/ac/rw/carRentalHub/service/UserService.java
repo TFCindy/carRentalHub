@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import auca.ac.rw.carRentalHub.dto.UserDTO;
 import auca.ac.rw.carRentalHub.model.User;
@@ -23,6 +25,14 @@ public class UserService {
     private LocationRepository locationRepository;
 
     /**
+     * Get paged users (for pagination demonstration)
+     */
+    public Page<UserDTO> getAllUsers(Pageable pageable) {
+        return userRepository.findAll(pageable)
+                .map(this::convertToDTO);
+    }
+
+    /**
      * REQUIREMENT #8: Get all users from a province
      * 
      * @param identifier - province code OR province name
@@ -36,6 +46,11 @@ public class UserService {
         return users.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+
+    // Simple existsBy demonstration used by controller
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
     
     /**

@@ -43,17 +43,13 @@ public interface UserRepository extends JpaRepository<User, UUID> {
            "WHERE u.email = :email AND u.id != :id")
     boolean existsByEmailAndIdNot(@Param("email") String email, @Param("id") UUID id);
     
-    // Check if user has any reservations
-    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
-           "FROM User u JOIN u.reservations r WHERE u.id = :userId")
-    boolean existsUserWithReservations(@Param("userId") UUID userId);
-    
-    // Complex existence check with location
-    boolean existsByLocationAndRoleName(Location location, String roleName);
-    
-    // For requirement #8 - find users by province
+    // Complex existence check with location and role name
+    // Use nested property to check role name
+    boolean existsByLocationAndRole_Name(Location location, String roleName);
+
+    // For requirement #8 - find users by province code or name (or children)
     @Query("SELECT u FROM User u WHERE u.location.id IN " +
            "(SELECT l.id FROM Location l WHERE l.code = :identifier OR l.name = :identifier " +
            "OR l.parent.code = :identifier OR l.parent.name = :identifier)")
-    List<User> findAllUsersByProvinceIdentifier(@Param("identifier") String identifier);
+    List<User> findUsersByProvinceIdentifier(@Param("identifier") String identifier);
 }
