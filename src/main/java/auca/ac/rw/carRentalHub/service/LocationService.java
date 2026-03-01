@@ -31,6 +31,15 @@ public class LocationService {
      */
     @Transactional
     public String saveLocation(Location location, String parentId) {
+        // keep old behavior for backward compatibility
+        return saveChildAndParent(location, parentId);
+    }
+
+    /**
+     * Method signature matching example service name. Does the same work.
+     */
+    @Transactional
+    public String saveChildAndParent(Location location, String parentId) {
         try {
             // Check if location with same code already exists
             if (locationRepository.existsByCode(location.getCode())) {

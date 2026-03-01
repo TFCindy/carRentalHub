@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import auca.ac.rw.carRentalHub.dto.LocationDTO;
@@ -36,22 +37,19 @@ public class LocationController {
      * For child locations, add parentId parameter:
      * POST /api/locations/save?parentId=123e4567-e89b-12d3-a456-426614174000
      */
-    @PostMapping("/save")
-    public ResponseEntity<Map<String, String>> saveLocation(
+    @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE,
+                 produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> saveLocation(
             @RequestBody Location location,
             @RequestParam(required = false) String parentId) {
         
-        Map<String, String> response = new HashMap<>();
-        String result = locationService.saveLocation(location, parentId);
-        
+        // call service method matching example name
+        String result = locationService.saveChildAndParent(location, parentId);
+
         if (result.contains("successfully")) {
-            response.put("message", result);
-            response.put("status", "success");
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+            return new ResponseEntity<>(result, HttpStatus.OK);
         } else {
-            response.put("message", result);
-            response.put("status", "error");
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(result, HttpStatus.CONFLICT);
         }
     }
 
